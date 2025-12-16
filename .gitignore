@@ -1,0 +1,23 @@
+# Temporary directories
+temp/
+input/*
+output/*
+!input/.gitkeep
+!output/.gitkeep
+
+# Generated configs
+config/dynamic_partitions.conf
+
+# System files
+.DS_Store
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+
+# Backup files
+*.bak
+*.old
+*.tmp
