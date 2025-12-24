@@ -7,6 +7,9 @@ generate_updater_script() {
     log_info "Generating updater-script..."
     
     {
+        echo 'ui_print("Checking /cache...");'
+        echo 'run_program("/sbin/sh", "-c", "[ -d /data/cache ] || mkdir -p /data/cache");'
+        echo ''
         echo 'assert(update_dynamic_partitions(package_extract_file("dynamic_partitions_op_list")));'
         
         for partition in $SELECTED_PARTITIONS; do
