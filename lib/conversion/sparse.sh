@@ -11,9 +11,16 @@ convert_to_sparse() {
     local img_size=$(stat -c%s "$img_file" 2>/dev/null || echo 0)
     echo "${partition}=${img_size}" >> "$sizes_file"
     
-    if ! python3 "$SCRIPTS_DIR/img2simg.py" "$img_file" -o "$output_file" > /dev/null 2>&1; then
-        log_error "Failed to convert $(basename "$img_file") to sparse"
-        return 1
+    if [ "${VERBOSE:-false}" = "true" ]; then
+        if ! python3 "$SCRIPTS_DIR/img2simg.py" -d "$img_file" -o "$output_file"; then
+            log_error "Failed to convert $(basename "$img_file") to sparse"
+            return 1
+        fi
+    else
+        if ! python3 "$SCRIPTS_DIR/img2simg.py" "$img_file" -o "$output_file" > /dev/null 2>&1; then
+            log_error "Failed to convert $(basename "$img_file") to sparse"
+            return 1
+        fi
     fi
     
     mv "$output_file" "$img_file"

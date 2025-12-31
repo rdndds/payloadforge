@@ -51,7 +51,7 @@ filter_partitions() {
         if [ -f "$partition_dir/${partition}.img" ]; then
             local size=$(stat -c%s "$partition_dir/${partition}.img" 2>/dev/null || echo 0)
             local size_mb=$((size / 1024 / 1024))
-            log_success "  ✓ ${partition}.img (${size_mb} MB)"
+            log_success "  ${partition}.img (${size_mb} MB)"
             valid_partitions="$valid_partitions $partition"
             found=$((found + 1))
         else

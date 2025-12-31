@@ -35,14 +35,14 @@ if [ ${#MISSING[@]} -ne 0 ]; then
     echo ""
     exit 1
 else
-    echo "✓ All dependencies found"
+    echo "All dependencies found"
 fi
 
 # Create directories
 echo "[2/5] Creating directories..."
 mkdir -p "$INSTALL_DIR"
 mkdir -p "$BIN_DIR"
-echo "✓ Directories created"
+echo "Directories created"
 
 # Copy files
 echo "[3/5] Copying files..."
@@ -52,12 +52,12 @@ cp README.md "$INSTALL_DIR/"
 
 # Create directories in install location
 mkdir -p "$INSTALL_DIR"/{input,output,temp}
-echo "✓ Files copied to $INSTALL_DIR"
+echo "Files copied to $INSTALL_DIR"
 
 # Create symlink
 echo "[4/5] Creating symlink..."
 ln -sf "$INSTALL_DIR/payloadforge" "$BIN_DIR/payloadforge"
-echo "✓ Symlink created at $BIN_DIR/payloadforge"
+echo "Symlink created at $BIN_DIR/payloadforge"
 
 # Update PATH hint
 echo "[5/5] Checking PATH configuration..."
@@ -69,7 +69,7 @@ if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
     echo ""
     echo "Then run: source ~/.bashrc"
 else
-    echo "✓ PATH is configured correctly"
+    echo "PATH is configured correctly"
 fi
 
 echo ""

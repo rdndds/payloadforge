@@ -7,9 +7,16 @@ extract_ota() {
     
     log_info "Extracting payload.bin from OTA zip..."
     
-    if ! unzip -q "$ota_file" "payload.bin" -d "$TEMP_DIR" 2>/dev/null; then
-        log_error "Failed to extract payload.bin"
-        return 1
+    if [ "${VERBOSE:-false}" = "true" ]; then
+        if ! unzip -o "$ota_file" "payload.bin" -d "$TEMP_DIR"; then
+            log_error "Failed to extract payload.bin"
+            return 1
+        fi
+    else
+        if ! unzip -o -q "$ota_file" "payload.bin" -d "$TEMP_DIR" 2>/dev/null; then
+            log_error "Failed to extract payload.bin (rerun with --verbose for unzip output)"
+            return 1
+        fi
     fi
     
     if [ ! -f "$payload_file" ]; then

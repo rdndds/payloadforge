@@ -16,12 +16,15 @@ OUTPUT_DIR=""
 INPUT_FILE=""
 INPUT_FILE_NAME=""
 SELECTED_PARTITIONS=""
+GENERATED_ZIP_PATH=""
 GROUP_TABLE=""
 GROUP_TABLE_SIZE=""
 MAX_THREADS=""
 BROTLI_LEVEL=""
 USE_COMPRESSION="true"
 ZIP_COMPRESSION_LEVEL=""
+VERBOSE="false"
+OUTPUT_NAME_MAX_LEN="40"
 
 init_environment() {
     # Get the main script directory (payloadforge2 location)
@@ -102,6 +105,13 @@ load_user_config() {
     local config_brotli=$(getvalue "BROTLI_LEVEL" "$settings_conf")
     local config_use_compression=$(getvalue "USE_COMPRESSION" "$settings_conf")
     local config_zip_level=$(getvalue "ZIP_COMPRESSION_LEVEL" "$settings_conf")
+    local config_log_level=$(getvalue "LOG_LEVEL" "$settings_conf")
+    local config_log_file=$(getvalue "LOG_FILE" "$settings_conf")
+    local config_log_color=$(getvalue "LOG_COLOR" "$settings_conf")
+    local config_log_time_format=$(getvalue "LOG_TIME_FORMAT" "$settings_conf")
+    local config_log_context=$(getvalue "LOG_CONTEXT" "$settings_conf")
+    local config_verbose=$(getvalue "VERBOSE" "$settings_conf")
+    local config_output_name_max_len=$(getvalue "OUTPUT_NAME_MAX_LEN" "$settings_conf")
     
     # Apply thread settings if not overridden by CLI
     if [ -z "$MAX_THREADS" ] || [ "$MAX_THREADS" = "0" ]; then
@@ -109,6 +119,57 @@ load_user_config() {
             MAX_THREADS="$config_threads"
         else
             MAX_THREADS=$(nproc 2>/dev/null || echo 4)
+        fi
+    fi
+
+    # Apply logging settings if not overridden by CLI
+    if [ "${LOG_LEVEL_SOURCE-}" != "cli" ]; then
+        if [ -n "$config_log_level" ]; then
+            LOG_LEVEL="$config_log_level"
+        fi
+    fi
+
+    if [ -n "$config_log_file" ]; then
+        LOG_FILE="$config_log_file"
+    fi
+
+    if [ -n "$config_log_color" ]; then
+        LOG_COLOR="$config_log_color"
+    fi
+
+    if [ -n "$config_log_time_format" ]; then
+        LOG_TIME_FORMAT="$config_log_time_format"
+    fi
+
+    if [ "${LOG_CONTEXT_SOURCE-}" != "cli" ] && [ -n "$config_log_context" ]; then
+        LOG_CONTEXT="$config_log_context"
+        LOG_CONTEXT_SOURCE="config"
+    fi
+
+    if [ "${VERBOSE_SOURCE-}" != "cli" ] && [ -n "$config_verbose" ]; then
+        case "${config_verbose,,}" in
+            1|true|yes|y|on)
+                VERBOSE="true"
+                ;;
+            0|false|no|n|off)
+                VERBOSE="false"
+                ;;
+        esac
+    fi
+
+    if [ "$VERBOSE" = "true" ] && [ "${LOG_LEVEL_SOURCE-}" != "cli" ] && [ -z "$config_log_level" ]; then
+        LOG_LEVEL="DEBUG"
+    fi
+
+    if command -v log_set_level >/dev/null 2>&1; then
+        log_set_level "${LOG_LEVEL:-INFO}"
+    fi
+
+    if [ -n "$config_output_name_max_len" ]; then
+        if [[ "$config_output_name_max_len" =~ ^[0-9]+$ ]] && [ "$config_output_name_max_len" -ge 8 ]; then
+            OUTPUT_NAME_MAX_LEN="$config_output_name_max_len"
+        else
+            log_warn "Invalid OUTPUT_NAME_MAX_LEN in settings.conf (must be integer >= 8)"
         fi
     fi
     

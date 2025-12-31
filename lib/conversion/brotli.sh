@@ -19,8 +19,13 @@ compress_brotli() {
     fi
     
     # Run brotli compression - it automatically creates .br file and removes source with -j
-    # Using same flags as original: -q (quality), -j (remove source), -w (window size)
-    if ! brotli -q "$level" -j -w 24 "$input_file" 2>&1; then
+    # -q is quality, not quiet.
+    local brotli_opts=("-q" "$level" -j -w 24)
+    if [ "${VERBOSE:-false}" = "true" ]; then
+        brotli_opts+=(-v)
+    fi
+
+    if ! brotli "${brotli_opts[@]}" "$input_file" 2>&1; then
         log_error "Failed to compress $partition"
         return 1
     fi

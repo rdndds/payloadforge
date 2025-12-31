@@ -33,6 +33,10 @@ Performance:
 
 Other:
   -h              Help
+  -v, --verbose   Extra verbose tool output
+  --log-level L   DEBUG|INFO|WARN|ERROR
+  --log-context M none|func|fileline|full
+  -d, --debug     Same as --log-level DEBUG
 ```
 
 ### Examples
@@ -71,6 +75,17 @@ THREADS=0                    # 0 = auto
 BROTLI_LEVEL=6              # 0-11
 USE_COMPRESSION=yes         # yes/no
 ZIP_COMPRESSION_LEVEL=6     # 0-9
+
+# Logging (optional)
+VERBOSE=no                  # yes/no (show tool output)
+LOG_LEVEL=INFO              # DEBUG|INFO|WARN|ERROR
+LOG_FILE=                   # write plain logs to a file
+LOG_COLOR=auto              # auto|always|never
+LOG_TIME_FORMAT=%Y-%m-%d\ %H:%M:%S
+LOG_CONTEXT=none            # none|func|fileline|full
+
+# Output naming
+OUTPUT_NAME_MAX_LEN=40      # integer >= 8 (shorten very long OTA filenames)
 ```
 
 Edit `config/dynamic_partitions.conf`:

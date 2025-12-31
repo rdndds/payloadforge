@@ -37,6 +37,33 @@ main() {
     # Parse arguments directly (not in subshell)
     while [ $# -gt 0 ]; do
         case "$1" in
+            -v|--verbose)
+                VERBOSE="true"
+                VERBOSE_SOURCE="cli"
+                LOG_LEVEL="DEBUG"
+                LOG_LEVEL_SOURCE="cli"
+                log_set_level "$LOG_LEVEL"
+                shift
+                ;;
+            --log-level)
+                LOG_LEVEL="$2"
+                LOG_LEVEL_SOURCE="cli"
+                log_set_level "$LOG_LEVEL"
+                shift 2
+                ;;
+            --log-context)
+                LOG_CONTEXT="$2"
+                LOG_CONTEXT_SOURCE="cli"
+                shift 2
+                ;;
+            -d|--debug)
+                LOG_LEVEL="DEBUG"
+                LOG_LEVEL_SOURCE="cli"
+                LOG_CONTEXT="full"
+                LOG_CONTEXT_SOURCE="cli"
+                log_set_level "$LOG_LEVEL"
+                shift
+                ;;
             -p|--partitions)
                 mode="manual"
                 custom_partitions="$2"
@@ -146,11 +173,11 @@ main() {
     # Cleanup
     cleanup
     
-    echo ""
-    log_success "═══════════════════════════════════════"
+    log_blank
     log_success "PayloadForge completed successfully!"
-    log_success "═══════════════════════════════════════"
-    echo ""
+    if [ -n "${GENERATED_ZIP_PATH-}" ]; then
+        log_emit_with_logger "INFO" "payloadforge.generation.package" "Full path: $GENERATED_ZIP_PATH"
+    fi
 }
 
 # Error handler
